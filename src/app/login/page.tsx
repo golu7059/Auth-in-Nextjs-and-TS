@@ -57,7 +57,7 @@ const LoginPage = () => {
 
     setErrors({}); // Clear any previous errors
     try {
-      const response = await axios.post("/api/login", user); 
+      const response = await axios.post("/api/users/login", user); 
       
       if(!response.data.success){
         setErrors({
@@ -100,7 +100,7 @@ const LoginPage = () => {
             value={user.email}
             placeholder="Enter your email"
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semibold"
             required
             disabled={disabledButton}
           />
@@ -121,7 +121,7 @@ const LoginPage = () => {
             value={user.password}
             placeholder="Enter your password"
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semibold"
             required
           />
           {errors.password && (

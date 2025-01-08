@@ -100,7 +100,7 @@ const SignupPage = () => {
             value={user.name}
             placeholder="Enter your name"
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semmiboold "
             required
           />
           {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
@@ -118,7 +118,7 @@ const SignupPage = () => {
             value={user.email}
             placeholder="Enter your email"
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semmiboold "
             required
           />
           {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
@@ -136,7 +136,7 @@ const SignupPage = () => {
             value={user.password}
             placeholder="Enter your password"
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semmiboold "
             required
           />
           {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
@@ -154,7 +154,7 @@ const SignupPage = () => {
             value={user.confirmPassword}
             placeholder="Confirm your password"
             onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semmiboold  "
             required
           />
           {errors.confirmPassword && (

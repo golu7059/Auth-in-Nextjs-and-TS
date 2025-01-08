@@ -6,7 +6,8 @@ import { dbConnection } from "@/dbConfig/dbConfig";
 
 await dbConnection()
 
-export default async function GET(request : NextRequest) {
+export async function POST(request : NextRequest){
+console.log("function called to login the user !")
     const {email , password } = await request.json();
     
     if(!email || !password) {
@@ -17,7 +18,7 @@ export default async function GET(request : NextRequest) {
         })
     }
     try {
-        const user = await  User.findOne({email})?.select("+ password");
+        const user = await User.findOne({ email }).select('+password');
         if(!user){
             NextResponse.json({
                 status : 400, 
@@ -25,7 +26,7 @@ export default async function GET(request : NextRequest) {
                 success : false 
             })
         }
-        const isPasswordVerified  = await bcryptjs.compare(user.password, password);
+        const isPasswordVerified  = await bcryptjs.compare(password, user.password);
 
         if(!isPasswordVerified){
             NextResponse.json({
@@ -42,14 +43,17 @@ export default async function GET(request : NextRequest) {
 
         const token = await jwt.sign(userData, process.env.SECRET_KEY as string, { expiresIn: "1d" });
 
-        return NextResponse.json({
-            status : 200,
-            message : "login successfully !",
-            success : true,
-        }).cookies.set("token", token , {
-            httpOnly : true 
-        })
+        const response = NextResponse.json({
+            status: 200,
+            message: "login successfully!",
+            success: true,
+        });
+        response.cookies.set("token", token, {
+            httpOnly: true,
+        });
+        return response;
     } catch (error : any){
+        console.log(error)
         return NextResponse.json({
             status : 500,
             message : "Please try to login later !",
