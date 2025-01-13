@@ -13,6 +13,7 @@ export async function dbConnection() {
     });
   } catch (error) {
     console.log("Something went wrong: ", error);
+    process.exit(1);
   }
 }
 

@@ -1,167 +1,114 @@
 "use client";
 
-import Link from "next/link";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast"
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
-const LoginPage = () => {
-  const [user, setUser] = useState({
-    email: "",
-    password: "",
-  });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [loading, setLoading] = useState(false);
-  const [disabledButton, setDissabledButton] = useState(false);
-  const [success, setSuccess] = useState<string | null>(null);
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 
+export default function LoginPage() {
   const router = useRouter();
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Handle input changes and update state
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUserInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setUser({ ...user, [name]: value });
   };
 
-  // Validate inputs
-  const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
-
-    if (!user.email) {
-      newErrors.email = "Email is required.";
-    } else if (!/\S+@\S+\.\S+/.test(user.email)) {
-      newErrors.email = "Email format is invalid.";
+  const handleLogin = async (user: any) => {
+    if (!user.email || !user.password) {
+      return toast.error("Please fill all the fields");
     }
 
-    if (!user.password) {
-      newErrors.password = "Password is required.";
-    }
-
-    return newErrors;
-  };
-
-  // Handle login form submission
-  const onLogin = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const formErrors = validateForm();
-
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-
-    setLoading(true);
-    setDissabledButton(true)
-
-    setErrors({}); // Clear any previous errors
     try {
-      const response = await axios.post("/api/users/login", user); 
-      
-      if(!response.data.success){
-        setErrors({
-          userDetails : "unable to get the user detais",
-        })
-        return
-      }
-      setSuccess("Login successful! Redirecting...");
-      toast.success("Login successfull")
-      const userid  = response.data.userid;
-      setTimeout(() => {
-        router.push(`/profile/${userid}`); // Or wherever you want to redirect after login
-      }, 2000);
-    } catch (error) {
-      setSuccess(null);
-      setErrors({ general: "Invalid credentials. Please try again." });
+      setLoading(true);
+
+      const response = axios.post("/api/users/login", user);
+      toast.promise(response, {
+        loading: "Logging in...",
+        success: (data: any) => {
+          console.log(data);
+          if (data.data.success) {
+            router.push("/profile");
+            return data.data.message;
+          }else {
+            toast.error(data.data.message);
+          }
+        },
+        error: (error: any) => {
+          console.error("Error in login inside toast promise:", error.message);
+          return error.response?.data.message || "Something went wrong!";
+        }
+      })
+    } catch (error: any) {
+      console.error("Error in login:", error.message);
+      toast.error(error.response?.data.message || "Something went wrong!");
     } finally {
       setLoading(false);
-      setDissabledButton(false)
     }
   };
 
   return (
-    <div className="flex flex-col gap-8 items-center justify-center py-8">
-      <h1 className="text-3xl font-bold">Login Page</h1>
-
-      <form
-        onSubmit={onLogin}
-        className="w-full max-w-md space-y-4 p-6 border rounded-md shadow-md"
-      >
-        {/* Email Input */}
-        <div>
-          <label htmlFor="email" className="block text-lg font-medium mb-2">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={user.email}
-            placeholder="Enter your email"
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semibold"
-            required
-            disabled={disabledButton}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email}</p>
-          )}
-        </div>
-
-        {/* Password Input */}
-        <div>
-          <label htmlFor="password" className="block text-lg font-medium mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={user.password}
-            placeholder="Enter your password"
-            onChange={handleInputChange}
-            className="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 text-black font-semibold"
-            required
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-          )}
-        </div>
-
-        {errors.general && (
-          <p className="text-red-500 text-center">{errors.general}</p>
-        )}
-
-        <div className="flex justify-center">
-          <button
-            type="submit"
-            className={`w-full p-3 text-white bg-blue-500 rounded-md cursor-pointer hover:bg-blue-400 ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            disabled={loading}
+    <>
+      <Toaster />
+      <div className="flex items-center justify-center h-screen bg-black">
+        <div className="bg-gray-200 p-8 rounded shadow-md w-full max-w-md">
+          <h1 className="font-bold text-orange-500 text-3xl mb-4 text-center">Login</h1>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin(user);
+            }}
+            className="flex flex-col space-y-4 text-black"
           >
-            {loading ? "Logging in..." : "Login"}
-          </button>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              onChange={handleUserInput}
+              className="p-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                onChange={handleUserInput}
+                className="p-3 border border-gray-300 text-black rounded focus:outline-none focus:ring-2 focus:ring-orange-500 w-full"
+              />
+              <div
+                className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaRegEyeSlash className="text-black"/> : <FaRegEye className="text-black"/>}
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="p-3 bg-orange-500 font-semibold text-white rounded hover:bg-orange-600 transition duration-300"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
+          <div className=" top-4 w-full">
+          <p className="text-black text-center mt-4">
+            Don't have an account?{" "}
+            <a
+              href="/signup"
+              className="text-red-500 hover:underline"
+            >
+              Register
+            </a>
+          </p>
         </div>
-      </form>
-
-      <div className="mt-6 text-center">
-        <p className="text-sm">
-          Don't have an account?{" "}
-          <Link href="/signup" className="text-blue-500 hover:underline">
-            Go to Signup
-          </Link>
-        </p>
+        </div>
       </div>
-
-      {success && (
-        <div className="mt-4 text-green-500 text-center">
-          <p>{success}</p>
-        </div>
-      )}
-    </div>
+    </>
   );
-};
-
-export default LoginPage;
+}

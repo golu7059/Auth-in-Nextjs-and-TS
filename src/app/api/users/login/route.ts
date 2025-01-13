@@ -1,63 +1,74 @@
 import User from "@/models/usermodel";
-import { NextRequest , NextResponse  } from "next/server";
-import bcryptjs from "bcryptjs"
-import jwt from "jsonwebtoken"
+import { NextRequest, NextResponse } from "next/server";
+import bcryptjs from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { dbConnection } from "@/dbConfig/dbConfig";
 
-await dbConnection()
+await dbConnection();
 
-export async function POST(request : NextRequest){
-console.log("function called to login the user !")
-    const {email , password } = await request.json();
-    
-    if(!email || !password) {
-        NextResponse.json({
-            status : 400, 
-            message : "All inputs are rquired !",
-            success : false 
-        })
+export async function POST(request: NextRequest) {
+    const { email, password } = await request.json();
+
+    // Validate required fields
+    if (!email || !password) {
+        return NextResponse.json({
+            status: 400,
+            message: "All inputs are required!",
+            success: false,
+        });
     }
+
     try {
-        const user = await User.findOne({ email }).select('+password');
-        if(!user){
-            NextResponse.json({
-                status : 400, 
-                message : "Invalid email id !",
-                success : false 
-            })
-        }
-        const isPasswordVerified  = await bcryptjs.compare(password, user.password);
+        // Find user by email
+        const user = await User.findOne({ email }).select("+password");
 
-        if(!isPasswordVerified){
-            NextResponse.json({
-                status : 400, 
-                message : "Invalid password  ",
-                success : false 
-            })
+        if (!user) {
+            return NextResponse.json({
+                status: 400,
+                message: "Invalid email ID!",
+                success: false,
+            });
         }
+
+        // Verify password
+        const isPasswordVerified = await bcryptjs.compare(password, user.password);
+
+        if (!isPasswordVerified) {
+            return NextResponse.json({
+                status: 400,
+                message: "Invalid password!",
+                success: false,
+            });
+        }
+
+        // Create token
         const userData = {
-            userid : user._id ,
-            name : user.name,
-            email : user.email,
-        }
+            userid: user._id,
+            name: user.name,
+            email: user.email,
+        };
+        const token = await jwt.sign(userData, process.env.SECRET_KEY!, {
+            expiresIn: "1d",
+        });
 
-        const token = await jwt.sign(userData, process.env.SECRET_KEY as string, { expiresIn: "1d" });
-
+        // Set cookie and send response
         const response = NextResponse.json({
             status: 200,
-            message: "login successfully!",
+            message: "Login successful!",
             success: true,
         });
         response.cookies.set("token", token, {
             httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // Set to true in production
         });
+
         return response;
-    } catch (error : any){
-        console.log(error)
+    } catch (error: any) {
+        console.error(error);
         return NextResponse.json({
-            status : 500,
-            message : "Please try to login later !",
-            success : false 
-        })
+            status: 500,
+            message: "Please try to login later!",
+            success: false,
+        });
     }
 }
