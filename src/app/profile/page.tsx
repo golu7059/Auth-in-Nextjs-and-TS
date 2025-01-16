@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { tokenData } from "@/helpers/tokenData";
 
 const profilePage = () => {
     const router = useRouter();

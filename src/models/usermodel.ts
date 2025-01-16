@@ -32,5 +32,6 @@ const userSchema = new  mongoose.Schema({
     timestamps : true
 })
 
-const User = mongoose.models.users || mongoose.model("users", userSchema);
+// first find the model in database and if not found create a new one
+const User = mongoose.models.user || mongoose.model("user", userSchema);
 export default User;

@@ -1,14 +1,11 @@
 import { NextRequest,NextResponse } from "next/server";
-import { tokenData } from "../helpers/tokenData";
+import { tokenData } from  "./helpers/tokenData";
 
-export function middleware(req: NextRequest, res : NextResponse){
+export function middleware(req: NextRequest){
     const {pathname} = req.nextUrl;
-    console.log(pathname);
     const isPublic = pathname === '/login' || pathname === '/signup'; 
     const token = req.cookies?.get('token')?.value || "";
-    
     const data = tokenData(req);
-    console.log(data);
 
     if(isPublic && token){
         return NextResponse.redirect(new URL('/',req.nextUrl));
