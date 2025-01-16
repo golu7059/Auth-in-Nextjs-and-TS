@@ -48,7 +48,11 @@ const sendMail = async (email: string, emailType: string, userId: any) => {
         } else if (emailType === 'reset') {
             emailOptions.subject = 'Password Reset';
             emailOptions.html = `<p>Please reset your password by clicking the link below:</p>
-                 <a href="${process.env.BASE_URL}/resetpassword?token=${hashedTokenforReset}">Reset Password</a>`;
+                 <a href="${process.env.BASE_URL}/forgotpassword/enternewpassword/?token=${hashedTokenforReset}">Reset Password</a>;
+                 <br/>
+                 <p> or just copy paste the below link in your browser: </p>
+                ${process.env.BASE_URL}/forgotpassword/enternewpassword/?token=${hashedTokenforReset} 
+                 `;
         }
 
         // Send the email

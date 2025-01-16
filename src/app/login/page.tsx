@@ -36,7 +36,7 @@ export default function LoginPage() {
           if (data.data.success) {
             router.push("/profile");
             return data.data.message;
-          }else {
+          } else {
             toast.error(data.data.message);
           }
         },
@@ -85,7 +85,7 @@ export default function LoginPage() {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <FaRegEyeSlash className="text-black"/> : <FaRegEye className="text-black"/>}
+                {showPassword ? <FaRegEyeSlash className="text-black" /> : <FaRegEye className="text-black" />}
               </div>
             </div>
             <button
@@ -97,16 +97,24 @@ export default function LoginPage() {
             </button>
           </form>
           <div className=" top-4 w-full">
-          <p className="text-black text-center mt-4">
-            Don't have an account?{" "}
-            <a
-              href="/signup"
-              className="text-red-500 hover:underline"
-            >
-              Register
-            </a>
-          </p>
-        </div>
+            <p className="text-black text-center mt-4">
+              Don't have an account?{" "}
+              <a
+                href="/signup"
+                className="text-red-500 hover:underline"
+              >
+                Register
+              </a>
+            </p>
+          </div>
+          <div className=" top-4 w-full text-center font-base">
+              <a
+                href="/forgotpassword"
+                className="text-blue-500 hover:underline"
+              >
+                Forgot Password
+              </a>
+          </div>
         </div>
       </div>
     </>

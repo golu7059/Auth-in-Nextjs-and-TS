@@ -58,7 +58,6 @@ export default function UserProfile() {
       toast.promise(response,{
         loading : "sending email.....",
         success : (data:any) => {
-          console.log(data.data);
           return  (data?.data?.message) || "Check your email"
         },
         error : (data:any) => {
